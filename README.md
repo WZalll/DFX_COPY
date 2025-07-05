@@ -1,44 +1,70 @@
-# DXF解析器和定制层输出工具
+# DXF to PCB Layer Converter
 
-## 项目概述
+🎯 **DXF解析器和CustomLayer创建工具**
 
-本项目实现了一个简化版的DXF解析器，能够：
-1. 解析DXF文件中的LWPOLYLINE、Circle、HATCH实体
-2. 创建CustomLayer图层
-3. 将解析的实体重绘到CustomLayer
-4. 导出CustomLayer为Gerber文件
+## 📋 项目概述
 
-## 文件结构
+本项目实现了一个专业的DXF解析器，能够将AutoCAD DXF文件转换为PCB图层：
+
+- ✅ 解析DXF文件中的 **CIRCLE**、**LWPOLYLINE**、**HATCH** 实体
+- ✅ 使用DFX MetaLab SDK创建 **CustomLayer** 图层  
+- ✅ 将DXF几何实体转换为PCB图形对象
+- ✅ 支持手动导出Gerber格式文件
+
+## 🚀 核心特性
+
+### DXF解析模块
+- 🔵 **CIRCLE**：圆形实体 → PCB圆形焊盘/过孔
+- 📏 **LWPOLYLINE**：轻量多段线 → PCB走线/多边形轮廓  
+- 🟢 **HATCH**：填充实体 → PCB填充区域/铜箔层
+
+### 技术架构
+- 📚 使用 `ezdxf` 库解析AutoCAD DXF文件格式
+- 🔌 通过DFX MetaLab SDK的Python接口创建PCB图层
+- 🎨 实现DXF几何实体到PCB图形对象的映射转换
+
+## 📁 文件结构
 
 ```
-PY_DXF/
-├── dxf_parser.py           # 主程序文件（选手编写的代码）
-├── mock_shape_editor.py    # 模拟的Shape编辑器（演示用）
-├── CustomLayer.gbr         # 输出的Gerber文件
-├── export_results.txt      # 导出结果记录
-├── 附件3：Top.dxf         # 输入的DXF文件
-├── vSDK_ShapeTools.py      # vSDK工具包
-├── vSDK.py                # vSDK核心库
-└── 开发手册.txt            # 开发手册
+📦 DFX_COPY/
+├── 🐍 dxf_parser.py           # 主程序（核心文件）
+├── 🔧 vSDK.py                # DFX MetaLab SDK核心接口
+├── 🛠️ vSDK_ShapeTools.py      # SDK图形工具模块
+├── 📋 requirements.txt        # Python依赖
+├── 🚫 .gitignore             # Git忽略文件
+└── 📖 README.md              # 项目说明
 ```
 
-## 运行环境
+## ⚡ 快速开始
 
-- Python 3.7+
-- ezdxf库
-- DFX MetaLab SDK（可选，用于完整功能）
-
-## 安装和运行
-
-### 1. 创建虚拟环境
+### 1. 环境准备
 ```bash
+# 克隆仓库
+git clone https://github.com/WZalll/DFX_COPY.git
+cd DFX_COPY
+
+# 创建虚拟环境
 python -m venv venv
-.\venv\Scripts\Activate.ps1  # Windows PowerShell
+# Windows
+.\venv\Scripts\Activate.ps1
+# Linux/Mac  
+source venv/bin/activate
+
+# 安装依赖
+pip install -r requirements.txt
 ```
 
-### 2. 安装依赖
-```bash
-pip install ezdxf
+### 2. 配置路径
+编辑 `dxf_parser.py` 顶部的路径配置：
+```python
+# DFX MetaLab SDK安装路径
+SDK_PATH = r"D:\DFX MetaLab"
+
+# Vayo Job文件路径
+JOB_PATH = r"your_job_file.job"
+
+# DXF文件名
+DXF_FILENAME = "your_dxf_file.dxf"
 ```
 
 ### 3. 运行程序
@@ -46,64 +72,53 @@ pip install ezdxf
 python dxf_parser.py
 ```
 
-## 功能特性
+## 📊 运行结果示例
 
-### DXF解析模块
-- 使用ezdxf库识别常用实体定义与坐标信息
-- 支持的实体类型：
-  - CIRCLE（圆形）
-  - LWPOLYLINE（轻量多段线）
-  - HATCH（填充块）
-  - MTEXT（忽略处理）
+```
+✅ 成功加载DXF文件: Top.dxf
+=== DXF解析统计 ===
+CIRCLE: 340个
+LWPOLYLINE: 2,869个  
+HATCH: 2,421个
 
-### 图形编辑与图层管理
-- 使用shape_editor API新建图层CustomLayer
-- 将解析的实体重绘到CustomLayer，保持原始比例和坐标
-- 支持正片/负片、填充状态等属性
+=== PCB图形转换统计 ===
+圆形焊盘: 340 个
+线段图形: 11,440 个
+填充区域: 2,421 个
+📊 总计PCB对象: 14,201 个
+```
 
-### 输出功能
-- 生成Gerber格式文件
-- 创建导出结果记录文件
-- 支持DFX MetaLab GUI集成
+## 🔧 技术要点
 
-## 运行结果
+- **模块化设计**：分离DXF解析、图形绘制、文件输出功能
+- **SDK集成**：基于DFX MetaLab SDK进行PCB图层操作
+- **几何转换**：精确的DXF到PCB坐标系统转换
+- **错误处理**：完整的异常处理和日志记录机制
 
-程序成功解析了TOP.dxf文件，统计结果：
-- Circle实体：340个
-- Line实体：11,440个  
-- Polygon实体：2,421个
-- 总计：14,201个图形对象
+## 📝 使用说明
 
-## 模拟模式说明
+1. **准备工作**：确保DFX MetaLab SDK已正确安装
+2. **路径配置**：修改代码中的SDK路径和Job文件路径
+3. **运行解析**：执行程序自动解析DXF并创建CustomLayer
+4. **手动导出**：在DFX MetaLab中打开Job文件，手动导出Gerber
 
-当无法访问完整的DFX MetaLab SDK时，程序会自动切换到模拟模式：
-- 使用MockShapeEditor进行演示
-- 生成占位符Gerber文件
-- 提供完整的解析功能
+## 🎯 应用场景
 
-## 实际部署说明
+- 🏭 **PCB设计**：将CAD设计转换为PCB制造文件
+- 🔄 **格式转换**：DXF到Gerber的标准化转换流程
+- 🎓 **教学演示**：CAD/PCB设计课程的实践项目
+- 🏆 **竞赛项目**：电子设计竞赛的辅助工具
 
-在有完整DFX MetaLab SDK的环境中：
-1. 修改SDK路径配置
-2. 程序会使用真实的vSDK_ShapeTools
-3. 通过DFX MetaLab GUI进行最终的Gerber导出
+## 📄 许可证
 
-## 设计思路
+本项目仅供学习和研究使用。
 
-1. **模块化设计**：分离DXF解析、图形绘制、文件输出功能
-2. **健壮性处理**：支持模拟模式，确保在各种环境下都能运行
-3. **标准兼容**：生成符合Gerber格式规范的输出文件
-4. **详细日志**：提供完整的解析和绘制过程记录
+## 👨‍💻 作者
 
-## 注意事项
+**落叶逐火**  
+📅 创建日期：2025年7月5日  
+🚀 版本：2.0 - 生产版本
 
-- 实际的Gerber导出需要通过DFX MetaLab GUI操作
-- 请按照开发手册说明进行最终的Gerber文件生成
-- 程序支持自动检测环境并切换运行模式
+---
 
-## 技术要点
-
-- 基于ezdxf库的DXF文件解析
-- 使用vSDK API进行图形绘制
-- 支持多种几何实体的坐标转换
-- 实现了完整的错误处理机制
+⭐ 如果这个项目对你有帮助，请给个Star！
