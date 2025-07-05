@@ -10,7 +10,7 @@ DXF解析器和CustomLayer创建工具
 - 实现DXF几何实体到PCB图形对象的映射转换
 
 支持的DXF实体类型：
-- CIRCLE: 圆形实体 -> PCB圆形焊盘/过孔
+- CIRCLE: 圆形实体 -> PCB过孔/空心圆
 - LWPOLYLINE: 轻量多段线 -> PCB走线/多边形轮廓  
 - HATCH: 填充实体 -> PCB填充区域/铜箔层
 
@@ -375,7 +375,7 @@ class CustomLayerManager:
         将DXF实体转换并绘制到PCB CustomLayer
         
         技术映射：
-        - CIRCLE -> PCB圆形焊盘/过孔 (使用circle接口)
+        - CIRCLE -> PCB过孔/空心圆 (使用circle接口，负极性)
         - LWPOLYLINE(封闭) -> PCB多边形区域 (使用polygon接口)  
         - LWPOLYLINE(开放) -> PCB线段序列 (使用line接口)
         - HATCH -> PCB填充多边形 (使用polygon接口，启用填充)
@@ -393,7 +393,7 @@ class CustomLayerManager:
             # 绘制统计计数器
             draw_stats = {'circles': 0, 'lines': 0, 'polygons': 0, 'errors': 0}
             
-            # 处理圆形实体 -> PCB圆形焊盘
+            # 处理圆形实体 -> PCB过孔
             circles = parsed_entities['circles']
             if circles:
                 print(f"🔴 处理{len(circles)}个圆形实体...")
@@ -435,7 +435,7 @@ class CustomLayerManager:
             
             # 输出转换统计
             print("\n=== PCB图形转换统计 ===")
-            print(f"圆形焊盘: {draw_stats['circles']} 个")
+            print(f"过孔/空心圆: {draw_stats['circles']} 个")
             print(f"线段图形: {draw_stats['lines']} 个")  
             print(f"填充区域: {draw_stats['polygons']} 个")
             print(f"转换错误: {draw_stats['errors']} 个")
@@ -472,8 +472,8 @@ class CustomLayerManager:
                 circleY=circle_data['center_y'],         # Y坐标
                 circleDiameter=circle_data['diameter'],  # 直径
                 layerId=self.custom_layer_id,            # 目标图层
-                circlePositiveNegative=True,             # 正极性(铜箔)
-                circleFilled=True                        # 实心填充
+                circlePositiveNegative=False,            # 负极性(过孔/空心)
+                circleFilled=False                       # 空心圆(过孔)
             )
             
             # 验证绘制结果
