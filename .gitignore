@@ -1,0 +1,57 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# Virtual Environment
+venv/
+env/
+ENV/
+
+# DXF and related files
+*.dxf
+*.gbr
+
+# Excel files
+*.xlsx
+
+# Word documents
+*.docx
+
+# Temporary files
+*.tmp
+*.bak
+
+# IDE
+.vscode/
+.idea/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Project specific
+example_getdata/
+任务要求.txt
+开发手册.txt
+提交*.md
+设计说明书.md
+路径配置说明.md
+最终提交说明.md
