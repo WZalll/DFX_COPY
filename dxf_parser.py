@@ -22,7 +22,7 @@ DXF解析器和CustomLayer创建工具
 
 作者：落叶逐火
 日期：2025年7月5日
-版本：2.0 - 生产版本
+版本：2.1 - 生产版本
 """
 
 import ezdxf
@@ -36,25 +36,40 @@ import os
 SDK_PATH = r"D:\DFX MetaLab"
 
 # Vayo Job文件路径（基于TOP.dxf新建的Job文件）
-JOB_PATH = r"D:\资料\竞赛\2025\25.7_成图大赛_电子类_国赛\top.vayo\top.job"
+JOB_PATH = r"D:\资料\竞赛\2025\25.7_成图大赛_电子类_国赛\test.vayo\test.job"
 
-# DXF文件名（实际文件名）
-DXF_FILENAME = "附件3：Top.dxf"
+# DXF文件路径
+DXF_FILE_PATH = r"D:\资料\竞赛\2025\25.7_成图大赛_电子类_国赛\PY_DXF\附件3：Top.dxf"
+
+# vSDK模块路径
+VSDK_MODULE_PATH = r"D:\资料\竞赛\2025\25.7_成图大赛_电子类_国赛\PY_DXF"
 
 # ========================================
 # 路径配置结束
 # ========================================
 
+import sys
+import os
+
+# 添加vSDK模块路径到sys.path，确保能够导入
+if VSDK_MODULE_PATH and os.path.exists(VSDK_MODULE_PATH):
+    if VSDK_MODULE_PATH not in sys.path:
+        sys.path.insert(0, VSDK_MODULE_PATH)
+    print(f"✅ 已添加vSDK模块路径: {VSDK_MODULE_PATH}")
+else:
+    print(f"⚠️ vSDK模块路径不存在: {VSDK_MODULE_PATH}")
+
 # 导入ShapeEditor - 专注于真实SDK
 try:
     from vSDK_ShapeTools import ShapeEditor, save_job
-    print("成功导入vSDK_ShapeTools")
+    print("✅ 成功导入vSDK_ShapeTools")
 except ImportError as e:
-    print(f"无法导入vSDK_ShapeTools: {e}")
+    print(f"❌ 无法导入vSDK_ShapeTools: {e}")
     print("请确保:")
     print("1. DFX MetaLab SDK已正确安装")
     print("2. vSDK.py和vSDK_ShapeTools.py文件存在")
-    print("3. SDK路径配置正确")
+    print("3. VSDK_MODULE_PATH路径配置正确")
+    print("4. 当前目录或VSDK_MODULE_PATH包含所需模块文件")
     raise
 
 
@@ -614,9 +629,9 @@ def main():
     print("DXF解析器和定制层输出工具")
     print("=" * 60)
     
-    # 使用预定义的路径配置
+    # 使用预定义的绝对路径配置，避免跨目录问题
     current_dir = os.path.dirname(os.path.abspath(__file__))
-    dxf_file_path = os.path.join(current_dir, DXF_FILENAME)
+    dxf_file_path = DXF_FILE_PATH  # 使用绝对路径
     sdk_path = SDK_PATH
     job_path = JOB_PATH
     
@@ -625,6 +640,7 @@ def main():
     print(f"DXF文件路径: {dxf_file_path}")
     print(f"SDK路径: {sdk_path}")
     print(f"Job路径: {job_path}")
+    print(f"vSDK模块路径: {VSDK_MODULE_PATH}")
     
     # 详细的路径检查
     path_checks = []
@@ -637,7 +653,7 @@ def main():
         path_checks.append(f"❌ DXF文件不存在: {dxf_file_path}")
         print("\n".join(path_checks))
         print(f"\n错误: DXF文件不存在: {dxf_file_path}")
-        print("请确认DXF文件在当前目录下")
+        print("请在代码顶部修改DXF_FILE_PATH为正确的绝对路径")
         return
     
     # 检查SDK路径
@@ -654,6 +670,21 @@ def main():
     else:
         path_checks.append(f"❌ Job文件不存在: {job_path}")
         path_checks.append("   请在代码顶部修改JOB_PATH为正确的vayo job文件路径")
+    
+    # 检查vSDK模块路径
+    if os.path.exists(VSDK_MODULE_PATH):
+        vsdk_tools_file = os.path.join(VSDK_MODULE_PATH, "vSDK_ShapeTools.py")
+        vsdk_file = os.path.join(VSDK_MODULE_PATH, "vSDK.py")
+        if os.path.exists(vsdk_tools_file):
+            path_checks.append(f"✅ vSDK_ShapeTools.py存在: {vsdk_tools_file}")
+        else:
+            path_checks.append(f"❌ vSDK_ShapeTools.py不存在: {vsdk_tools_file}")
+        if os.path.exists(vsdk_file):
+            path_checks.append(f"✅ vSDK.py存在: {vsdk_file}")
+        else:
+            path_checks.append(f"❌ vSDK.py不存在: {vsdk_file}")
+    else:
+        path_checks.append(f"❌ vSDK模块路径不存在: {VSDK_MODULE_PATH}")
     
     # 显示检查结果
     print("\n".join(path_checks))
